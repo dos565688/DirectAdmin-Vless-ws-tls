@@ -1,6 +1,6 @@
 ### Webfreecloud CDN节点部署+多优选域名方案 说明：
 
-1：单协议Vless ws tls，适用webfreecloud低配置环境（以及web.c-servers这类DirectAdmin面板node.js环境）
+1：单协议Vless ws tls，同时适用web.c-servers这类DirectAdmin面板node.js环境
 
 2：Webfreecloud需先更新托管到CF的域名
 
