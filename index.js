@@ -15,9 +15,9 @@ const BEST_DOMAINS = [
   "www.wto.org",
   "shopify.com",
   "time.is",
-  "www.noq.hk",
+  "www.digitalocean.com",
   "www.visa.com.hk",
-  "udemy.com",
+  "www.udemy.com",
 ];
 
 // ============================================================
