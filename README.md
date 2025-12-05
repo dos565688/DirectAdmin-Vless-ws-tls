@@ -16,13 +16,13 @@
 
 * 3：进入面板：附加功能--Setup Node.js APP
    
-              输入：
-                   public_html
-                   index.js
+     输入：
+          public_html
+          index.js
 
-              然后：
-                   CREATE APPLICATION，运行两次
-               （如出现异常提示，进入第5条）
+     然后：
+           CREATE APPLICATION，运行两次
+          （如出现异常提示，进入第5条）
    
 * 4：域名/UUID，浏览器访问可见节点链接地址
 
