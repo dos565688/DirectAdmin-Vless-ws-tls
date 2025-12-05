@@ -140,27 +140,3 @@ server.listen(listenPort, "127.0.0.1", () => {
     console.log(`访问：http://<服务器IP>:${PORT}/${UUID}`);
     console.log("查看全部节点（适用于 DirectAdmin）\n");
 });
-
-// ==========================
-// KeepAlive 每1~1.5小时访问 DOMAIN/UUID
-// 精简版，单线程，最小内存占用
-// ==========================
-const https = require('https');  // 引入 https 模块
-
-function keepAlive() {
-    const url = `https://${DOMAIN}/${UUID}`;
-
-    // 发起 GET 请求，不阻塞、不报错
-    https.get(url).on("error", ()s => {});
-
-    // 计算 1~1.5 小时随机延迟（毫秒）
-    const min = 60 * 60 * 1000;
-    const max = 90 * 60 * 1000;
-    const delay = Math.floor(Math.random() * (max - min + 1)) + min;
-
-    // 用一个 setTimeout 循环，单线程执行
-    setTimeout(keepAlive, delay);
-}
-
-// 仅调用一次，启动循环
-keepAlive();
