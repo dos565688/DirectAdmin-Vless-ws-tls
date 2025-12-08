@@ -111,7 +111,6 @@ wss.on("connection", ws => {
 // ============================================================
 const listenPort = Number(PORT) || 0; // 0 = 随机端口
 
-// 唯一改动：监听地址改为 127.0.0.1（其余完全不动）
 server.listen(listenPort, "127.0.0.1", () => {
     const actualPort = server.address().port;
     console.log("\n===============================================");
