@@ -1,9 +1,9 @@
 // ====== 只修改两个核心变量 UUID/DOMAIN ======
 
-const UUID = (process.env.UUID || "abcd1eb2-1c20-345a-96fa-cdf394612345").trim();   //替换"双引号中的UUID"
-const DOMAIN = (process.env.DOMAIN || "abc.domain.dpdns.org").trim();               //替换"双引号中的完整域名"
+const UUID = (process.env.UUID || "abcd1eb2-1c20-345a-96fa-cdf394612345").trim();   // 替换"双引号中的UUID"
+const DOMAIN = (process.env.DOMAIN || "abc.domain.dpdns.org").trim();               // 替换"双引号中的完整域名"
 
-// Panel
+// Panel 配置
 const NAME = "DirectAdmin-easyshare";
 const PORT = 0; // 随机端口
 const BEST_DOMAINS = [
@@ -18,7 +18,7 @@ const BEST_DOMAINS = [
 ];
 
 // ============================================================
-// =============== 模块加载区 ===============
+// =============== 模块加载区 ================================
 // ============================================================
 const http = require('http');
 const net = require('net');
@@ -34,14 +34,14 @@ try {
 const { WebSocket, createWebSocketStream } = require("ws");
 
 // ============================================================
-// =============== 生成 VLESS 节点链接函数 ===============
+// =============== 生成 VLESS 节点链接函数 ====================
 // ============================================================
 function generateLink(address) {
     return `vless://${UUID}@${address}:443?encryption=none&security=tls&sni=${DOMAIN}&fp=chrome&type=ws&host=${DOMAIN}&path=%2F#${NAME}`;
 }
 
 // ============================================================
-// =============== HTTP 服务 ===============
+// =============== HTTP 服务 ==================================
 // ============================================================
 const server = http.createServer((req, res) => {
     if (req.url === "/") {
@@ -60,15 +60,14 @@ const server = http.createServer((req, res) => {
 });
 
 // ============================================================
-// =============== WebSocket（后端） ===============
+// =============== WebSocket 后端 ============================
 // ============================================================
 const wss = new WebSocket.Server({ server });
 const uuid_clean = UUID.replace(/-/g, "");
 
 // WS 连接处理
 wss.on("connection", ws => {
-
-    let tcp = null; // 确保作用域可在 close/error 使用
+    let tcp = null; // TCP 对象作用域
 
     ws.on("error", () => { });
     ws.on("close", () => {
@@ -81,6 +80,7 @@ wss.on("connection", ws => {
         const [VERSION] = msg;
         const id = msg.slice(1, 17);
 
+        // UUID 校验
         if (!id.every((v, i) => v === parseInt(uuid_clean.substr(i * 2, 2), 16))) return;
 
         let p = msg.slice(17, 18).readUInt8() + 19;
@@ -88,6 +88,7 @@ wss.on("connection", ws => {
         const ATYP = msg.slice(p, p += 1).readUInt8();
         let host = "";
 
+        // ATYP 解析 host
         if (ATYP === 1) {
             host = msg.slice(p, p += 4).join(".");
         } else if (ATYP === 2) {
@@ -101,18 +102,14 @@ wss.on("connection", ws => {
                 .join(":");
         }
 
-        // 返回握手
+        // 发送握手成功
         ws.send(new Uint8Array([VERSION, 0]));
 
+        // 建立 TCP + WebSocket 双向管道
         const duplex = createWebSocketStream(ws);
-
         tcp = net.connect({ host, port }, () => {
             tcp.write(msg.slice(p));
-            duplex
-                .on("error", () => { })
-                .pipe(tcp)
-                .on("error", () => { })
-                .pipe(duplex);
+            duplex.pipe(tcp).pipe(duplex);
         });
 
         tcp.on("error", () => {
@@ -122,20 +119,19 @@ wss.on("connection", ws => {
 });
 
 // ============================================================
-// =============== 启动信息 & 自保活 ===============
+// =============== 启动 & 自保活 ============================
 // ============================================================
 const listenPort = Number(PORT) || 0;
-
 server.listen(listenPort, "0.0.0.0", () => {
-    const actualPort = server.address().port;
+    // 访问一次端口，确保 Node.js 完成监听，避免客户端 -1
+    server.address().port;
 });
 
-// 自保活，每 2 分钟访问一次 domain/UUID
+// 自保活，每 2 分钟访问 /UUID 保持 Node.js 进程活跃
 setInterval(() => {
     try {
         const port = server.address().port;
-        http.get(`http://127.0.0.1:${port}/${UUID}`, res => {
-            res.resume();
-        }).on("error", () => { });
-    } catch (err) { }
+        http.get(`http://127.0.0.1:${port}/${UUID}`, res => res.resume())
+            .on("error", () => { });
+    } catch { }
 }, 120 * 1000);
