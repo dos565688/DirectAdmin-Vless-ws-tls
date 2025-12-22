@@ -8,10 +8,10 @@ const NAME = "DirectAdmin-easyshare";
 const PORT = 0; // 随机端口
 const BEST_DOMAINS = [
     "www.visa.cn",
-    "usa.visa.com",
-    "www.wto.org",
     "www.shopify.com",
     "time.is",
+    "www.wto.org",
+    "usa.visa.com",
     "www.digitalocean.com",
     "www.visa.com.hk",
     "www.udemy.com",
