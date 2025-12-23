@@ -6,7 +6,7 @@
 
 * 多区域优选域名覆盖，延迟低，网络表现优异
 
-* （若节点经常出现-1可选）Cloudflare Workers保活方案：
+* （可选）Cloudflare Workers保活方案：
 
   https://github.com/eishare/keep-alive-DirectDdmin-Node.js
 -----------------------------------------------------------
